@@ -590,7 +590,9 @@ ul {
   }
 
   .results-panel {
-    display: none;
+    transform: translateX(-360px);
+    opacity: 0;
+    pointer-events: none;
   }
 
   .practitioner-drawer {

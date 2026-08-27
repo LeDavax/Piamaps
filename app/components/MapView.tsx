@@ -59,7 +59,9 @@ export default function MapView() {
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 900px)");
     setLogoCompact(mql.matches);
-    requestAnimationFrame(() => setLogoReady(true));
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setLogoReady(true));
+    });
     const handler = (e: MediaQueryListEvent) => setLogoCompact(e.matches);
     mql.addEventListener("change", handler);
     return () => mql.removeEventListener("change", handler);
@@ -307,7 +309,7 @@ export default function MapView() {
         </div>
       </header>
 
-      <aside className={`results-panel ${panelHidden ? "hidden" : ""}`}>
+      <aside className={`results-panel ${panelHidden ? "hidden" : ""} ${logoReady ? "" : "no-transition"}`}>
         <div className="results-header">
           <div className="results-count">
             <span className="count-number">{practitioners.length}</span> professionnels
