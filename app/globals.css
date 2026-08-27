@@ -173,15 +173,14 @@ ul {
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-  overflow: hidden;
-  transition: width 0.4s cubic-bezier(0.5, 0, 0.5, 1);
 }
 
 .brand-logo {
   height: 32px;
-  width: auto;
+  width: 128px;
   display: block;
-  overflow: visible;
+  overflow: hidden;
+  transition: width 0.4s cubic-bezier(0.5, 0, 0.5, 1);
 }
 
 #logo-right {
@@ -190,6 +189,19 @@ ul {
 
 #logo-text {
   transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.5, 0, 0.5, 1);
+}
+
+.brand-logo--compact {
+  width: 32px;
+}
+
+.brand-logo--compact #logo-right {
+  transform: translateX(-3062.607px);
+}
+
+.brand-logo--compact #logo-text {
+  opacity: 0;
+  transform: translateX(-2934px);
 }
 
 
@@ -563,31 +575,12 @@ ul {
 @media (max-width: 768px) {
   .topbar {
     top: 12px;
-    padding: 4px 4px 4px 12px;
+    padding: 4px 4px 4px 8px;
     gap: 8px;
   }
 
-  .topbar-brand {
-    width: 28px;
-    overflow: hidden;
-  }
-
-  .brand-logo {
-    height: 28px;
-    width: auto;
-  }
-
-  #logo-right {
-    transform: translateX(-3062.607px);
-  }
-
-  #logo-text {
-    opacity: 0;
-    transform: translateX(-2934px);
-  }
-
   .search-field input {
-    width: 100px;
+    width: 80px;
   }
 
   .results-panel {
