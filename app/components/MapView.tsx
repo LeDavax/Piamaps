@@ -79,10 +79,11 @@ export default function MapView() {
         container: mapContainer.current,
         style: "https://tiles.openfreemap.org/styles/liberty",
         center: FRANCE_CENTER,
-        zoom: 6,
+        zoom: 55,
         maxZoom: 20,
         attributionControl: false,
         preserveDrawingBuffer: true,
+        trackResize: false,
       });
 
     map.addControl(new maplibregl.AttributionControl({ compact: false }), "bottom-right");
@@ -159,7 +160,20 @@ export default function MapView() {
 
     mapRef.current = map;
 
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    const handleResize = () => {
+      document.body.classList.add("map-resizing");
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        map.resize();
+        document.body.classList.remove("map-resizing");
+      }, 150);
+    };
+    window.addEventListener("resize", handleResize);
+
     return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(resizeTimer);
       map.remove();
       mapRef.current = null;
     };
