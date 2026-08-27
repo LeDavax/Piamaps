@@ -79,7 +79,7 @@ export default function MapView() {
         container: mapContainer.current,
         style: "https://tiles.openfreemap.org/styles/liberty",
         center: FRANCE_CENTER,
-        zoom: 55,
+        zoom: 5.5,
         maxZoom: 20,
         attributionControl: false,
         preserveDrawingBuffer: true,
