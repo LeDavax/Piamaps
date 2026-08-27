@@ -169,24 +169,13 @@ ul {
 .topbar-brand {
   display: flex;
   align-items: center;
-  gap: 8px;
   flex-shrink: 0;
 }
 
-.brand-mark {
-  color: var(--color-accent);
-}
-
-.brand-name {
-  font-weight: 800;
-  font-size: 16px;
-  letter-spacing: -0.03em;
-  color: var(--color-text);
-}
-
-.brand-care {
-  color: var(--color-accent);
-  font-weight: 600;
+.brand-logo {
+  height: 28px;
+  width: auto;
+  display: block;
 }
 
 .search-group {
@@ -513,8 +502,9 @@ ul {
 .drawer-profile-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 8px 14px;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
   background: var(--color-ground);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border-subtle);
@@ -528,9 +518,23 @@ ul {
 }
 
 .drawer-profile-logo {
-  height: 20px;
+  height: 18px;
   width: auto;
   display: block;
+  flex-shrink: 0;
+}
+
+.drawer-profile-label {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.drawer-profile-icon {
+  flex-shrink: 0;
+  color: var(--color-text-tertiary);
 }
 
 /* ─── Mobile sheet ─── */

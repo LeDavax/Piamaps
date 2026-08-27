@@ -209,18 +209,8 @@ export default function MapView() {
 
       <header className="topbar">
         <div className="topbar-brand">
-          <svg className="brand-mark" width="24" height="24" viewBox="0 0 28 28" fill="none">
-            <circle cx="14" cy="14" r="12" stroke="currentColor" strokeWidth="1.5" />
-            <circle cx="14" cy="14" r="6" stroke="currentColor" strokeWidth="1" />
-            <circle cx="14" cy="14" r="2" fill="currentColor" />
-            <line x1="14" y1="0" x2="14" y2="5" stroke="currentColor" strokeWidth="1" />
-            <line x1="14" y1="23" x2="14" y2="28" stroke="currentColor" strokeWidth="1" />
-            <line x1="0" y1="14" x2="5" y2="14" stroke="currentColor" strokeWidth="1" />
-            <line x1="23" y1="14" x2="28" y2="14" stroke="currentColor" strokeWidth="1" />
-          </svg>
-          <span className="brand-name">
-            piana<span className="brand-care">care</span>
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="Piana Care" className="brand-logo" />
         </div>
 
         <div className="search-group">
@@ -348,7 +338,6 @@ export default function MapView() {
 
             {activePractitioner.profiles && activePractitioner.profiles.length > 0 && (
               <div className="drawer-section">
-                <div className="drawer-section-title">Prendre rendez-vous</div>
                 <div className="drawer-profiles">
                   {activePractitioner.profiles.map((profile) => (
                     <a
@@ -357,7 +346,6 @@ export default function MapView() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="drawer-profile-btn"
-                      aria-label={`Voir le profil sur ${PLATFORM_LABEL[profile.platform]}`}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -365,6 +353,10 @@ export default function MapView() {
                         alt={PLATFORM_LABEL[profile.platform]}
                         className="drawer-profile-logo"
                       />
+                      <span className="drawer-profile-label">Profil {PLATFORM_LABEL[profile.platform]}</span>
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="drawer-profile-icon">
+                        <path d="M2 10L10 2M10 2H5M10 2V7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
                     </a>
                   ))}
                 </div>
