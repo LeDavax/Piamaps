@@ -54,10 +54,12 @@ export default function MapView() {
   const [searchProfession, setSearchProfession] = useState("");
   const [searchLocation, setSearchLocation] = useState("");
   const [logoCompact, setLogoCompact] = useState(false);
+  const [logoReady, setLogoReady] = useState(false);
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 900px)");
     setLogoCompact(mql.matches);
+    requestAnimationFrame(() => setLogoReady(true));
     const handler = (e: MediaQueryListEvent) => setLogoCompact(e.matches);
     mql.addEventListener("change", handler);
     return () => mql.removeEventListener("change", handler);
@@ -247,8 +249,8 @@ export default function MapView() {
       <div id="map" ref={mapContainer} />
 
       <header className="topbar">
-        <div className="topbar-brand">
-          <svg className={`brand-logo ${logoCompact ? "brand-logo--compact" : ""}`} viewBox="0 0 4087 1024" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Piana Care">
+        <div className={`topbar-brand ${logoCompact ? "topbar-brand--compact" : ""} ${logoReady ? "" : "no-transition"}`}>
+          <svg className={`brand-logo ${logoCompact ? "brand-logo--compact" : ""} ${logoReady ? "" : "no-transition"}`} viewBox="0 0 4087 1024" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Piana Care">
             <g id="logo-left">
               <path d="M0 868.451V766.607H107.413V868.451C107.413 881.218 112.484 893.461 121.512 902.488C130.539 911.516 142.782 916.587 155.549 916.587H257.393V1024H155.549C114.295 1024 74.7305 1007.61 45.5594 978.441C16.3884 949.27 9.64574e-05 909.705 0 868.451ZM512 281.418C544.98 262.675 582.757 253.231 621.237 254.577C674.595 256.443 725.156 278.906 762.308 317.251C799.459 355.595 820.312 406.842 820.491 460.232C820.669 513.586 800.186 564.936 763.338 603.52L763.339 603.521L587.812 787.858C578.043 798.122 566.289 806.294 553.266 811.88C540.235 817.469 526.204 820.351 512.026 820.351C497.847 820.351 483.817 817.469 470.786 811.88C457.764 806.295 446.012 798.125 436.244 787.862L260.667 603.527V603.526C223.816 564.941 203.331 513.589 203.509 460.232C203.688 406.842 224.541 355.595 261.692 317.251C298.844 278.906 349.405 256.443 402.763 254.577C441.243 253.231 479.02 262.675 512 281.418ZM617.484 361.924C591.884 361.029 566.933 370.086 547.867 387.192L512 419.374L476.133 387.192C457.067 370.086 432.116 361.029 406.516 361.924C380.917 362.82 356.66 373.597 338.836 391.993C321.012 410.39 311.006 434.976 310.921 460.591C310.836 485.806 320.371 510.087 337.552 528.501L338.376 529.374L338.41 529.409L338.444 529.445L512.026 711.684L685.55 529.451L685.587 529.413L685.624 529.374C703.324 510.859 713.165 486.206 713.079 460.591C712.994 434.976 702.989 410.39 685.164 391.993C667.34 373.597 643.083 362.82 617.484 361.924ZM0 155.549C0.000103697 114.295 16.3884 74.7305 45.5594 45.5594C74.7305 16.3884 114.295 0.000103692 155.549 0H257.393V107.413H155.549C142.782 107.413 130.539 112.484 121.512 121.512C112.484 130.539 107.413 142.782 107.413 155.549V257.393H0V155.549Z" fill="#3C7B5F"/>
             </g>
