@@ -169,6 +169,7 @@ ul {
 .topbar-brand {
   display: flex;
   align-items: center;
+  gap: 8px;
   flex-shrink: 0;
 }
 
@@ -177,6 +178,7 @@ ul {
   width: auto;
   display: block;
 }
+
 
 .search-group {
   display: flex;

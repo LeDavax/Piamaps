@@ -210,7 +210,7 @@ export default function MapView() {
       <header className="topbar">
         <div className="topbar-brand">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="Piana Care" className="brand-logo" />
+          <img src="/logo-full.png" alt="Piana Care" className="brand-logo" />
         </div>
 
         <div className="search-group">
