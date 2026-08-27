@@ -158,7 +158,7 @@ ul {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 8px 10px 8px 20px;
+  padding: 8px;
   background: var(--color-panel);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-elevated);
