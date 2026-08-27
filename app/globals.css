@@ -189,7 +189,7 @@ ul {
   align-items: center;
   background: var(--color-ground);
   border-radius: var(--radius-xl);
-  padding: 2px 8px;
+  padding: 2px;
   gap: 0;
 }
 
