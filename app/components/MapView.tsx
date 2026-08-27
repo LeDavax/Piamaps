@@ -30,7 +30,7 @@ const PLATFORM_LABEL: Record<string, string> = {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://piana-care.onrender.com";
 
-const PARIS_CENTER: [number, number] = [2.3422, 48.8606];
+const FRANCE_CENTER: [number, number] = [2.2137, 46.6034];
 
 function practitionersToGeoJSON(practitioners: Practitioner[]) {
   return {
@@ -78,10 +78,11 @@ export default function MapView() {
     const map = new maplibregl.Map({
         container: mapContainer.current,
         style: "https://tiles.openfreemap.org/styles/liberty",
-        center: PARIS_CENTER,
-        zoom: 13,
+        center: FRANCE_CENTER,
+        zoom: 6,
         maxZoom: 20,
         attributionControl: false,
+        preserveDrawingBuffer: true,
       });
 
     map.addControl(new maplibregl.AttributionControl({ compact: false }), "bottom-right");
