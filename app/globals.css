@@ -173,6 +173,8 @@ ul {
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  overflow: hidden;
+  transition: width 0.4s cubic-bezier(0.5, 0, 0.5, 1);
 }
 
 .brand-logo {
@@ -565,10 +567,14 @@ ul {
     gap: 8px;
   }
 
-  .brand-logo {
-    height: 28px;
+  .topbar-brand {
     width: 28px;
     overflow: hidden;
+  }
+
+  .brand-logo {
+    height: 28px;
+    width: auto;
   }
 
   #logo-right {
