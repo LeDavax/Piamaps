@@ -4,6 +4,11 @@ import { useEffect, useRef, useState, useCallback } from "react";
 
 declare const maplibregl: any;
 
+interface PractitionerProfile {
+  platform: "doctolib" | "docorga" | "lemedecin";
+  url: string;
+}
+
 interface Practitioner {
   id: number;
   name: string;
@@ -14,7 +19,14 @@ interface Practitioner {
   lat: number;
   lng: number;
   distance: number | null;
+  profiles?: PractitionerProfile[];
 }
+
+const PLATFORM_LABEL: Record<string, string> = {
+  doctolib: "Doctolib",
+  docorga: "Docorga",
+  lemedecin: "LeMedecin.fr",
+};
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://piana-care.onrender.com";
 
@@ -330,6 +342,31 @@ export default function MapView() {
                     <path d="M6 10.5L10 5.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeDasharray="2 2" />
                   </svg>
                   <span className="drawer-info-text">{activePractitioner.distance.toFixed(1)} km de votre position</span>
+                </div>
+              </div>
+            )}
+
+            {activePractitioner.profiles && activePractitioner.profiles.length > 0 && (
+              <div className="drawer-section">
+                <div className="drawer-section-title">Prendre rendez-vous</div>
+                <div className="drawer-profiles">
+                  {activePractitioner.profiles.map((profile) => (
+                    <a
+                      key={profile.platform}
+                      href={profile.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="drawer-profile-btn"
+                      aria-label={`Voir le profil sur ${PLATFORM_LABEL[profile.platform]}`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`/${profile.platform}-logo.png`}
+                        alt={PLATFORM_LABEL[profile.platform]}
+                        className="drawer-profile-logo"
+                      />
+                    </a>
+                  ))}
                 </div>
               </div>
             )}
