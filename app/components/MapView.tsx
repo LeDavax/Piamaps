@@ -13,26 +13,10 @@ interface Practitioner {
   phone: string;
   lat: number;
   lng: number;
-  distance: number;
+  distance: number | null;
 }
 
-const MOCK_PRACTITIONERS: Practitioner[] = [
-  { id: 1, name: "Dr. Marie Lefèvre", profession: "Médecin", specialty: "Médecine Générale", address: "12 Rue de Rivoli, 75001 Paris", phone: "01 42 33 12 45", lat: 48.8606, lng: 2.3376, distance: 0.3 },
-  { id: 2, name: "Dr. Thomas Mercier", profession: "Psychiatre", specialty: "Psychiatrie de l'adulte", address: "45 Boulevard Saint-Germain, 75005 Paris", phone: "01 43 26 78 90", lat: 48.8495, lng: 2.3477, distance: 0.8 },
-  { id: 3, name: "Sophie Durand", profession: "Psychologue", specialty: "TCC, Anxiété", address: "8 Rue du Bac, 75007 Paris", phone: "01 45 44 32 10", lat: 48.8557, lng: 2.3254, distance: 1.1 },
-  { id: 4, name: "Dr. Karim Benali", profession: "Médecin", specialty: "Cardiologie", address: "23 Avenue de l'Opéra, 75001 Paris", phone: "01 42 61 55 33", lat: 48.8690, lng: 2.3340, distance: 0.5 },
-  { id: 5, name: "Claire Moreau", profession: "Kinésithérapeute", specialty: "Rééducation fonctionnelle", address: "67 Rue de Clichy, 75009 Paris", phone: "01 48 74 22 18", lat: 48.8812, lng: 2.3285, distance: 1.8 },
-  { id: 6, name: "Dr. Jean-Pierre Roux", profession: "Dentiste", specialty: "Chirurgie dentaire", address: "15 Rue de la Paix, 75002 Paris", phone: "01 42 61 44 77", lat: 48.8693, lng: 2.3305, distance: 0.6 },
-  { id: 7, name: "Lucie Martin", profession: "Infirmière", specialty: "Soins à domicile", address: "34 Rue Montmartre, 75002 Paris", phone: "01 42 33 98 01", lat: 48.8655, lng: 2.3427, distance: 0.4 },
-  { id: 8, name: "Dr. Anne-Sophie Petit", profession: "Médecin", specialty: "Dermatologie", address: "9 Place Vendôme, 75001 Paris", phone: "01 42 60 11 23", lat: 48.8673, lng: 2.3291, distance: 0.7 },
-  { id: 9, name: "Marc Girard", profession: "Orthophoniste", specialty: "Troubles du langage", address: "52 Rue de Turbigo, 75003 Paris", phone: "01 42 72 34 56", lat: 48.8650, lng: 2.3545, distance: 1.3 },
-  { id: 10, name: "Dr. Isabelle Fontaine", profession: "Médecin", specialty: "Pédiatrie", address: "18 Rue de Sèvres, 75006 Paris", phone: "01 45 48 90 12", lat: 48.8510, lng: 2.3270, distance: 1.5 },
-  { id: 11, name: "Philippe Dubois", profession: "Ostéopathe", specialty: "Ostéopathie structurelle", address: "28 Rue du Faubourg Saint-Honoré, 75008 Paris", phone: "01 42 65 88 44", lat: 48.8720, lng: 2.3150, distance: 1.0 },
-  { id: 12, name: "Dr. Nathalie Laurent", profession: "Médecin", specialty: "Ophtalmologie", address: "3 Rue Scribe, 75009 Paris", phone: "01 47 42 33 55", lat: 48.8718, lng: 2.3320, distance: 0.9 },
-  { id: 13, name: "Éric Blanc", profession: "Psychologue", specialty: "Psychologie clinique", address: "41 Rue de Babylone, 75007 Paris", phone: "01 45 51 22 67", lat: 48.8515, lng: 2.3165, distance: 1.6 },
-  { id: 14, name: "Dr. François Nguyen", profession: "Médecin", specialty: "ORL", address: "6 Rue Auber, 75009 Paris", phone: "01 47 42 11 88", lat: 48.8735, lng: 2.3310, distance: 1.2 },
-  { id: 15, name: "Camille Bernard", profession: "Sage-femme", specialty: "Suivi de grossesse", address: "19 Rue de Vaugirard, 75006 Paris", phone: "01 42 22 45 00", lat: 48.8492, lng: 2.3340, distance: 1.4 },
-];
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://piana-care.onrender.com";
 
 const PARIS_CENTER: [number, number] = [2.3422, 48.8606];
 
@@ -50,12 +34,29 @@ function practitionersToGeoJSON(practitioners: Practitioner[]) {
 export default function MapView() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
-  const [practitioners, setPractitioners] = useState<Practitioner[]>(MOCK_PRACTITIONERS);
+  const practitionersRef = useRef<Practitioner[]>([]);
+  const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
   const [activePractitioner, setActivePractitioner] = useState<Practitioner | null>(null);
   const [panelHidden, setPanelHidden] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState(false);
   const [searchProfession, setSearchProfession] = useState("");
   const [searchLocation, setSearchLocation] = useState("");
+
+  const fetchPractitioners = useCallback(async (profession: string, location: string) => {
+    const params = new URLSearchParams();
+    if (profession.trim()) params.set("profession", profession.trim());
+    if (location.trim()) params.set("location", location.trim());
+    const res = await fetch(`${API_URL}/api/practitioners?${params}`);
+    const json = await res.json();
+    return json.data as Practitioner[];
+  }, []);
+
+  useEffect(() => {
+    fetchPractitioners("", "").then((data) => {
+      setPractitioners(data);
+      practitionersRef.current = data;
+    });
+  }, [fetchPractitioners]);
 
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return;
@@ -85,7 +86,7 @@ export default function MapView() {
       map.on("load", () => {
         map.addSource("practitioners", {
           type: "geojson",
-          data: practitionersToGeoJSON(MOCK_PRACTITIONERS),
+          data: practitionersToGeoJSON(practitionersRef.current),
         });
 
         map.addLayer({
@@ -115,7 +116,7 @@ export default function MapView() {
         map.on("click", "practitioner-points", (e: any) => {
           if (!e.features?.[0]) return;
           const props = e.features[0].properties;
-          const p = MOCK_PRACTITIONERS.find((pr) => pr.id === props.id);
+          const p = practitionersRef.current.find((pr) => pr.id === props.id);
           if (p) {
             setActivePractitioner(p);
             map.flyTo({ center: [p.lng, p.lat], zoom: 15, duration: 600 });
@@ -153,21 +154,10 @@ export default function MapView() {
     }
   }, [practitioners]);
 
-  const handleSearch = useCallback(() => {
-    const prof = searchProfession.toLowerCase().trim();
-    const loc = searchLocation.toLowerCase().trim();
-
-    let results = MOCK_PRACTITIONERS;
-    if (prof) {
-      results = results.filter(
-        (p) => p.profession.toLowerCase().includes(prof) || p.specialty.toLowerCase().includes(prof)
-      );
-    }
-    if (loc) {
-      results = results.filter((p) => p.address.toLowerCase().includes(loc));
-    }
-
+  const handleSearch = useCallback(async () => {
+    const results = await fetchPractitioners(searchProfession, searchLocation);
     setPractitioners(results);
+    practitionersRef.current = results;
     setActivePractitioner(null);
 
     if (results.length > 0 && mapRef.current) {
@@ -179,7 +169,7 @@ export default function MapView() {
         duration: 800,
       });
     }
-  }, [searchProfession, searchLocation]);
+  }, [searchProfession, searchLocation, fetchPractitioners]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleSearch();
