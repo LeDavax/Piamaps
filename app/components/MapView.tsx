@@ -84,6 +84,12 @@ export default function MapView() {
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
 
       map.on("load", () => {
+        map.getStyle().layers.forEach((layer: any) => {
+          if (layer.type === "fill-extrusion") {
+            map.setLayoutProperty(layer.id, "visibility", "none");
+          }
+        });
+
         map.addSource("practitioners", {
           type: "geojson",
           data: practitionersToGeoJSON(practitionersRef.current),
