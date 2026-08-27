@@ -161,12 +161,26 @@ export default function MapView() {
     mapRef.current = map;
 
     let resizeTimer: ReturnType<typeof setTimeout>;
+    let snapshot: HTMLImageElement | null = null;
+
     const handleResize = () => {
-      document.body.classList.add("map-resizing");
       clearTimeout(resizeTimer);
+
+      if (!snapshot && mapContainer.current) {
+        const canvas = map.getCanvas();
+        const img = document.createElement("img");
+        img.src = canvas.toDataURL();
+        img.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;pointer-events:none;";
+        mapContainer.current.appendChild(img);
+        snapshot = img;
+      }
+
       resizeTimer = setTimeout(() => {
         map.resize();
-        document.body.classList.remove("map-resizing");
+        if (snapshot) {
+          snapshot.remove();
+          snapshot = null;
+        }
       }, 150);
     };
     window.addEventListener("resize", handleResize);
@@ -174,6 +188,7 @@ export default function MapView() {
     return () => {
       window.removeEventListener("resize", handleResize);
       clearTimeout(resizeTimer);
+      if (snapshot) snapshot.remove();
       map.remove();
       mapRef.current = null;
     };

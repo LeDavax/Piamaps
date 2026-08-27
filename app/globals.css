@@ -79,17 +79,6 @@ ul {
   background: #f0ede6;
 }
 
-#map canvas {
-  transition: none;
-}
-
-.map-resizing #map canvas {
-  visibility: hidden;
-}
-
-.map-resizing #map {
-  background: #f0ede6;
-}
 
 .maplibregl-ctrl-bottom-right {
   right: 12px !important;
