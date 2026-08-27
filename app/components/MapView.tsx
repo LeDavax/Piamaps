@@ -4,29 +4,42 @@ import { useEffect, useRef, useState, useCallback } from "react";
 
 declare const maplibregl: any;
 
-interface PractitionerProfile {
-  platform: "doctolib" | "docorga" | "lemedecin";
-  url: string;
-}
-
 interface Practitioner {
-  id: number;
-  name: string;
-  profession: string;
-  specialty: string;
+  id: string;
+  first_name: string;
+  last_name: string;
+  gender_code: string;
+  profession_code: string;
+  profession_label: string;
   address: string;
-  phone: string;
-  lat: number;
-  lng: number;
+  postal_code: string;
+  city: string;
+  department_code: string;
+  latitude: number | null;
+  longitude: number | null;
+  phone: string | null;
+  email: string | null;
+  website: string | null;
+  diplomas: string | null;
   distance: number | null;
-  profiles?: PractitionerProfile[];
 }
 
-const PLATFORM_LABEL: Record<string, string> = {
-  doctolib: "Doctolib",
-  docorga: "Docorga",
-  lemedecin: "LeMedecin.fr",
-};
+const KNOWN_PLATFORMS: { domain: string; label: string; logo: string }[] = [
+  { domain: "doctolib.fr", label: "Doctolib", logo: "/doctolib-logo.png" },
+  { domain: "docorga.com", label: "Docorga", logo: "/docorga-logo.png" },
+  { domain: "lemedecin.fr", label: "LeMedecin.fr", logo: "/lemedecin-logo.png" },
+  { domain: "keldoc.com", label: "Keldoc", logo: "/keldoc-logo.png" },
+  { domain: "maiia.com", label: "Maiia", logo: "/maiia-logo.png" },
+];
+
+function getPlatformInfo(url: string) {
+  try {
+    const hostname = new URL(url).hostname;
+    const match = KNOWN_PLATFORMS.find((p) => hostname === p.domain || hostname.endsWith("." + p.domain));
+    if (match) return match;
+  } catch {}
+  return { domain: "", label: new URL(url).hostname.replace(/^www\./, ""), logo: "/website-logo.svg" };
+}
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://piana-care.onrender.com";
 
@@ -35,12 +48,37 @@ const FRANCE_CENTER: [number, number] = [2.2137, 46.6034];
 function practitionersToGeoJSON(practitioners: Practitioner[]) {
   return {
     type: "FeatureCollection" as const,
-    features: practitioners.map((p) => ({
-      type: "Feature" as const,
-      geometry: { type: "Point" as const, coordinates: [p.lng, p.lat] },
-      properties: { id: p.id, name: p.name, profession: p.profession, specialty: p.specialty, address: p.address, phone: p.phone, distance: p.distance },
-    })),
+    features: practitioners
+      .filter((p) => p.latitude && p.longitude)
+      .map((p) => ({
+        type: "Feature" as const,
+        geometry: { type: "Point" as const, coordinates: [p.longitude!, p.latitude!] },
+        properties: { id: p.id },
+      })),
   };
+}
+
+function getLinks(p: Practitioner): string[] {
+  if (!p.website) return [];
+  try {
+    return JSON.parse(p.website);
+  } catch {
+    return [];
+  }
+}
+
+function getDiplomas(p: Practitioner): string[] {
+  if (!p.diplomas) return [];
+  try {
+    return JSON.parse(p.diplomas);
+  } catch {
+    return [];
+  }
+}
+
+function displayName(p: Practitioner): string {
+  const prefix = p.profession_code === '1' ? 'Dr. ' : '';
+  return `${prefix}${p.first_name} ${p.last_name}`;
 }
 
 export default function MapView() {
@@ -152,7 +190,7 @@ export default function MapView() {
           const p = practitionersRef.current.find((pr) => pr.id === props.id);
           if (p) {
             setActivePractitioner(p);
-            map.flyTo({ center: [p.lng, p.lat], zoom: 15, duration: 600 });
+            map.flyTo({ center: [p.longitude!, p.latitude!], zoom: 15, duration: 600 });
           }
         });
 
@@ -223,7 +261,7 @@ export default function MapView() {
 
     if (results.length > 0 && mapRef.current) {
       const bounds = new maplibregl.LngLatBounds();
-      results.forEach((p) => bounds.extend([p.lng, p.lat]));
+      results.forEach((p) => { if (p.longitude && p.latitude) bounds.extend([p.longitude, p.latitude]); });
       mapRef.current.fitBounds(bounds, {
         padding: { top: 100, bottom: 60, left: 380, right: 60 },
         maxZoom: 15,
@@ -238,13 +276,11 @@ export default function MapView() {
 
   const selectPractitioner = (p: Practitioner) => {
     setActivePractitioner(p);
-    mapRef.current?.flyTo({ center: [p.lng, p.lat], zoom: 15, duration: 600 });
+    mapRef.current?.flyTo({ center: [p.longitude!, p.latitude!], zoom: 15, duration: 600 });
   };
 
-  const specialties = activePractitioner?.specialty
-    ?.split(",")
-    .map((s) => s.trim())
-    .filter(Boolean) ?? [];
+  const diplomas = activePractitioner ? getDiplomas(activePractitioner) : [];
+  const links = activePractitioner ? getLinks(activePractitioner) : [];
 
   return (
     <>
@@ -327,9 +363,9 @@ export default function MapView() {
               className={`result-item ${activePractitioner?.id === p.id ? "active" : ""}`}
               onClick={() => selectPractitioner(p)}
             >
-              <div className="result-item__name">{p.name}</div>
-              <div className="result-item__profession">{p.specialty || p.profession}</div>
-              <div className="result-item__address">{p.address}</div>
+              <div className="result-item__name">{displayName(p)}</div>
+              <div className="result-item__profession">{p.profession_label}</div>
+              <div className="result-item__address">{p.city}</div>
               {p.distance != null && <div className="result-item__distance">{p.distance.toFixed(1)} km</div>}
             </li>
           ))}
@@ -344,15 +380,15 @@ export default function MapView() {
         </button>
         {activePractitioner && (
           <div className="drawer-content">
-            <div className="drawer-profession">{activePractitioner.profession}</div>
-            <h2 className="drawer-name">{activePractitioner.name}</h2>
+            <div className="drawer-profession">{activePractitioner.profession_label}</div>
+            <h2 className="drawer-name">{displayName(activePractitioner)}</h2>
 
-            {specialties.length > 0 && (
+            {diplomas.length > 0 && (
               <div className="drawer-section">
-                <div className="drawer-section-title">Spécialités</div>
+                <div className="drawer-section-title">Diplômes</div>
                 <div className="drawer-specialties">
-                  {specialties.map((s) => (
-                    <span key={s} className="drawer-tag">{s}</span>
+                  {diplomas.map((d: string) => (
+                    <span key={d} className="drawer-tag">{d}</span>
                   ))}
                 </div>
               </div>
@@ -393,29 +429,32 @@ export default function MapView() {
               </div>
             )}
 
-            {activePractitioner.profiles && activePractitioner.profiles.length > 0 && (
+            {links.length > 0 && (
               <div className="drawer-section">
                 <div className="drawer-profiles">
-                  {activePractitioner.profiles.map((profile) => (
-                    <a
-                      key={profile.platform}
-                      href={profile.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="drawer-profile-btn"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`/${profile.platform}-logo.png`}
-                        alt={PLATFORM_LABEL[profile.platform]}
-                        className="drawer-profile-logo"
-                      />
-                      <span className="drawer-profile-label">Profil {PLATFORM_LABEL[profile.platform]}</span>
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="drawer-profile-icon">
-                        <path d="M2 10L10 2M10 2H5M10 2V7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </a>
-                  ))}
+                  {links.map((link: string) => {
+                    const platform = getPlatformInfo(link);
+                    return (
+                      <a
+                        key={link}
+                        href={link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="drawer-profile-btn"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={platform.logo}
+                          alt={platform.label}
+                          className="drawer-profile-logo"
+                        />
+                        <span className="drawer-profile-label">Profil {platform.label}</span>
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="drawer-profile-icon">
+                          <path d="M2 10L10 2M10 2H5M10 2V7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -437,9 +476,9 @@ export default function MapView() {
               className={`result-item ${activePractitioner?.id === p.id ? "active" : ""}`}
               onClick={() => selectPractitioner(p)}
             >
-              <div className="result-item__name">{p.name}</div>
-              <div className="result-item__profession">{p.specialty || p.profession}</div>
-              <div className="result-item__address">{p.address}</div>
+              <div className="result-item__name">{displayName(p)}</div>
+              <div className="result-item__profession">{p.profession_label}</div>
+              <div className="result-item__address">{p.city}</div>
               {p.distance != null && <div className="result-item__distance">{p.distance.toFixed(1)} km</div>}
             </li>
           ))}
