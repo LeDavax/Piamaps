@@ -174,9 +174,13 @@ ul {
 }
 
 .brand-logo {
-  height: 36px;
+  height: 32px;
   width: auto;
   display: block;
+}
+
+.brand-logo--icon {
+  display: none;
 }
 
 
@@ -185,7 +189,7 @@ ul {
   align-items: center;
   background: var(--color-ground);
   border-radius: var(--radius-xl);
-  padding: 2px;
+  padding: 2px 8px;
   gap: 0;
 }
 
@@ -554,8 +558,13 @@ ul {
     gap: 8px;
   }
 
-  .topbar-brand {
+  .brand-logo--full {
     display: none;
+  }
+
+  .brand-logo--icon {
+    display: block;
+    height: 28px;
   }
 
   .search-field input {
