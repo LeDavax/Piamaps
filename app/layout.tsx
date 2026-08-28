@@ -10,7 +10,7 @@ const archivo = Archivo({
 });
 
 export const metadata: Metadata = {
-  title: "Piana Care — Trouvez votre professionnel de santé",
+  title: "Piamaps — Trouvez votre professionnel de santé",
   description:
     "Recherchez et localisez les professionnels de santé en France à partir des données officielles RPPS.",
 };

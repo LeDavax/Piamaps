@@ -173,7 +173,7 @@ ul {
   align-items: center;
   flex-shrink: 0;
   overflow: hidden;
-  width: 128px;
+  width: 115px;
   transition: width 0.4s cubic-bezier(0.5, 0, 0.5, 1);
 }
 
@@ -183,16 +183,18 @@ ul {
 
 .brand-logo {
   height: 32px;
-  width: 128px;
+  width: 115px;
   display: block;
   flex-shrink: 0;
 }
 
 #logo-right {
+  transform: translateX(3408px);
   transition: transform 0.4s cubic-bezier(0.5, 0, 0.5, 1);
 }
 
 #logo-text {
+  transform: translate(908px, 25px);
   transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.5, 0, 0.5, 1);
 }
 
@@ -202,12 +204,12 @@ ul {
 }
 
 .brand-logo--compact #logo-right {
-  transform: translateX(-3062.607px);
+  transform: translateX(767px);
 }
 
 .brand-logo--compact #logo-text {
   opacity: 0;
-  transform: translateX(-2934px);
+  transform: translate(-1713px, 25px);
 }
 
 
