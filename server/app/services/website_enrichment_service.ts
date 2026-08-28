@@ -78,9 +78,15 @@ async function searchDdg(query: string): Promise<string[]> {
 
     const html = await res.text()
     const root = parseHtml(html)
+    const blocks = root.querySelectorAll('.result.web-result')
+
+    if (blocks.length === 0) {
+      console.warn(`[enrich:ddg] 0 blocks — status=${res.status} snippet="${html.slice(0, 200).replace(/\s+/g, ' ')}"`)
+    }
+
     const urls: string[] = []
 
-    for (const block of root.querySelectorAll('.result.web-result').slice(0, 5)) {
+    for (const block of blocks.slice(0, 5)) {
       const href = block.querySelector('.result__a')?.getAttribute('href') ?? ''
       const url = cleanDdgUrl(href)
       if (url && isAllowedDomain(url) && !urls.includes(url)) {
