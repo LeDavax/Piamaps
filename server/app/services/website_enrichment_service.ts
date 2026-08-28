@@ -118,7 +118,7 @@ export async function runEnrichment(db: Client, options: EnrichOptions = {}): Pr
     const profession = PROFESSION_LABELS[String(row[3] ?? '')] ?? 'professionnel de santé'
     const city = String(row[4] ?? '')
 
-    const query = `"${firstName} ${lastName}" ${profession} ${city} doctolib OR keldoc OR maiia OR lemedecin OR docorga`
+    const query = `"${firstName} ${lastName}" (site:doctolib.fr OR site:keldoc.com OR site:maiia.com OR site:lemedecin.fr OR site:docorga.fr)`
     log.info(`→ ${firstName} ${lastName} (${city})`)
 
     const urls = await searchDdg(query)
