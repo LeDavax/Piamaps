@@ -18,6 +18,7 @@ const PROFESSION_LABELS: Record<string, string> = {
   '3': 'chirurgien-dentiste',
 }
 
+
 const USER_AGENTS = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -115,10 +116,11 @@ export async function runEnrichment(db: Client, options: EnrichOptions = {}): Pr
     const id = String(row[0])
     const firstName = String(row[1])
     const lastName = String(row[2])
-    const profession = PROFESSION_LABELS[String(row[3] ?? '')] ?? 'professionnel de santé'
+    const profession = PROFESSION_LABELS[String(row[3] ?? '')] ?? ''
     const city = String(row[4] ?? '')
 
-    const query = `"${firstName} ${lastName}" (site:doctolib.fr OR site:keldoc.com OR site:maiia.com OR site:lemedecin.fr OR site:docorga.fr)`
+    const profPart = profession ? `${profession} ` : ''
+    const query = `"${firstName} ${lastName}" ${profPart}(site:doctolib.fr OR site:keldoc.com OR site:maiia.com OR site:lemedecin.fr OR site:docorga.fr)`
     log.info(`→ ${firstName} ${lastName} (${city})`)
 
     const urls = await searchDdg(query)
