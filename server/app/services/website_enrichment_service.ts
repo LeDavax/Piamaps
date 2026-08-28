@@ -1,4 +1,4 @@
-import { createClient, type Client } from '@libsql/client'
+import type { Client } from '@libsql/client'
 import { parse as parseHtml } from 'node-html-parser'
 
 const ALLOWED_DOMAINS = ['doctolib.fr', 'docorga.fr', 'lemedecin.fr', 'maiia.com', 'keldoc.com']
@@ -132,7 +132,7 @@ export async function runEnrichment(db: Client, options: EnrichOptions = {}): Pr
       updated++
     }
 
-    await new Promise((r) => setTimeout(r, 1500))
+    await new Promise((r) => setTimeout(r, 500 + Math.random() * 1000))
   }
 
   log.success(`Done — ${updated}/${rows.length} updated`)
