@@ -105,7 +105,7 @@ export async function runEnrichment(db: Client, options: EnrichOptions = {}): Pr
     options.force ? '' : "WHERE website IS NULL OR website = '' OR website = '[]'"
 
   const { rows } = await db.execute(
-    `SELECT id, first_name, last_name, profession_code, city FROM practitioners ${whereClause} ORDER BY id DESC`
+    `SELECT id, first_name, last_name, profession_code, city FROM practitioners ${whereClause} ORDER BY RANDOM()`
   )
 
   log.info(`${rows.length} practitioners to process`)
