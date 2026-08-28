@@ -41,7 +41,7 @@ function getPlatformInfo(url: string) {
   return { domain: "", label: new URL(url).hostname.replace(/^www\./, ""), logo: "/website-logo.svg" };
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://piamaps-api.onrender.com";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://piamaps.onrender.com";
 
 const FRANCE_CENTER: [number, number] = [2.2137, 46.6034];
 
