@@ -24,6 +24,7 @@
     "#models/*": "./app/models/*.js",
     "#mails/*": "./app/mails/*.js",
     "#services/*": "./app/services/*.js",
+    "#commands/*": "./app/commands/*.js",
     "#listeners/*": "./app/listeners/*.js",
     "#events/*": "./app/events/*.js",
     "#generated/*": "./.adonisjs/server/*.js",
@@ -64,10 +65,12 @@
     "@adonisjs/session": "^8.1.0",
     "@adonisjs/shield": "^9.0.0",
     "@japa/api-client": "^3.2.1",
+    "@libsql/client": "^0.17.4",
     "@tuyau/core": "^1.2.2",
     "@vinejs/vine": "^4.4.0",
     "better-sqlite3": "^13.0.3",
     "luxon": "^3.7.2",
+    "node-html-parser": "^9.0.2",
     "reflect-metadata": "^0.2.2"
   },
   "hotHook": {
